@@ -1,28 +1,23 @@
-# k8s-python
 
-This project provides a sample for k8s with python
+# Getting started with Python dev
 
-![PyPI - Format](https://img.shields.io/pypi/format/concourseatom)
-![PyPI - License](https://img.shields.io/pypi/l/concourseatom)
-![PyPI - Version](https://img.shields.io/pypi/v/concourseatom)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/concourseatom)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/concourseatom)
-
-
-# What does this do
-
-Describe me
-
-# Getting started
-
-Go to the container dir and then run
+Go to the container dir and then run the install sequence
 
     make venv
     source venv/bin/activate
 
+Once installed run with the following:
+
+    k8s-python start tests/test_data/config.yaml
+
+Optionally run with debug shell
+
+    k8s-python --debug start tests/test_data/config.yaml
+
 # Development Mode
 
 When developing you can take advantage of adev to manage restarts, etc
+This maps to a hardcoded config in the tests/test_data/config.yaml file
 This can be run using the make wrapper:
 
     make adev
@@ -33,6 +28,6 @@ Capture issues here to look at:
 
 * [x] CLI parsing
 * [x] config loading via yaml
-* [ ] secret loading
+* [ ] secret loading [https://github.com/pydantic/pydantic/discussions/2928#discussioncomment-4744841]
 * [x] async http
 * [ ] liveness
