@@ -1,0 +1,4 @@
+---
+web:
+  host: http://localhost:8080
+  prefix: apple
