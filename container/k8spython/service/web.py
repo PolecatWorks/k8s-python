@@ -2,17 +2,15 @@ from aiohttp import web
 
 
 
-def webservice_start(config):
+def webservice_init(app: web.Application)-> web.Application:
     """
     Start the web service
     """
-    app = web.Application()
 
-    app['config'] = config
     app.add_routes([web.get('/', handle),
                     web.get('/{name}', handle)])
 
-    web.run_app(app)
+    return app
 
 
 async def handle(request):

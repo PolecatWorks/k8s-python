@@ -9,7 +9,7 @@ class WebServerConfig(BaseModel):
     """
     Configuration for the web server
     """
-    host: HttpUrl = Field(description="Host to listen on")
+    url: HttpUrl = Field(description="Host to listen on")
     prefix: str = Field(description="Prefix for the name of the resources")
 
 

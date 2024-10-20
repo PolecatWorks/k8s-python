@@ -20,12 +20,19 @@ Go to the container dir and then run
     make venv
     source venv/bin/activate
 
+# Development Mode
+
+When developing you can take advantage of adev to manage restarts, etc
+This can be run using the make wrapper:
+
+    make adev
+
 # Issues
 
 Capture issues here to look at:
 
-* [ ] CLI parsing
-* [ ] config loading via yaml
+* [x] CLI parsing
+* [x] config loading via yaml
 * [ ] secret loading
-* [ ] async http
+* [x] async http
 * [ ] liveness
