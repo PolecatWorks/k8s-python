@@ -9,9 +9,8 @@ hams:
   address: 127.0.0.1:8079
   prefix: hams
 webservice:
-  prefix:
-    name: view
-  address: http://0.0.0.0:8080
+  prefix: /k8spython
+  url: http://0.0.0.0:8080
 persistence:
   local_file:
     prefix: test_data/local_files
