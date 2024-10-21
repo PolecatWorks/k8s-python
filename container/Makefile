@@ -1,3 +1,8 @@
+NAME=k8s-python
+TAG ?= 0.3.0
+REPO ?= dockerreg.k8s:5000/polecatworks
+
+DOCKER=docker
 
 
 PYTHON := venv/bin/python
@@ -9,6 +14,14 @@ PYLINT := venv/bin/pylint
 POETRY := venv/bin/poetry
 ADEV   := venv/bin/adev
 DETECT_SECRETS := venv/bin/detect-secrets
+
+
+.ONESHELL:
+docker-build:
+	{ \
+	$(DOCKER) build . -t $(NAME) -f Dockerfile; \
+	$(DOCKER) image ls $(NAME); \
+	}
 
 
 PYTEST_ARGS=-rP --pdb
