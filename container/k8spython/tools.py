@@ -67,22 +67,14 @@ def parse(ctx, config_file):
 
 
 @cli.command()
-@click.argument("config_file", type=click.File("rb"))
+@click.option("--config", type=click.File("rb"))
+@click.option("--secrets", type=click.Path(exists=True))
 @click.pass_context
-def start(ctx, config_file):
-
-    # from pydantic_yaml import parse_yaml_raw_as, to_yaml_str
-
-
-    # config = parse_yaml_raw_as(ServiceConfig, config_file)
-    # click.echo(config)
-
-    # click.secho("Config:", fg="green")
-    # click.echo(to_yaml_str(config))
+def start(ctx, config, secrets):
 
     from k8spython.service import service_start
 
-    service_start(config_file)
+    service_start(config)
 
 
 

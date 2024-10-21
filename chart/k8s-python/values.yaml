@@ -87,11 +87,11 @@ configs: {}  # Note: Defaults provided in helm configs dir
 
 command:
 - k8s-python
+- start
 - --config
 - /opt/app/configs/serviceconfig.yaml
 - --secrets
 - /opt/app/secrets
-- start
 
 secretName: null
 

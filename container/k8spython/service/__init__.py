@@ -45,7 +45,7 @@ def service_start(config_file: click.File):
     """
 
     app = service_app_create(config_file)
-    web.run_app(app, host=app['config'].web.url.host, port=app['config'].web.url.port)
+    web.run_app(app, host=app['config'].webservice.url.host, port=app['config'].webservice.url.port)
 
 
 

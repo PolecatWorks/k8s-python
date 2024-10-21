@@ -1,0 +1,7 @@
+---
+image:
+  repository: ghcr.io/polecatworks/k8s-python
+  tag: main
+
+imagePullSecrets:
+  - name: dockerconfigjson-ghcr-io
