@@ -17,4 +17,4 @@ class ServiceConfig(BaseModel):
     """
     Configuration for the service
     """
-    web: WebServerConfig = Field(description="Web server configuration")
+    webservice: WebServerConfig = Field(description="Web server configuration")

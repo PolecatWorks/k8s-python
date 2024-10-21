@@ -1,4 +1,4 @@
 ---
-web:
+webservice:
   url: http://localhost:8080
   prefix: apple
