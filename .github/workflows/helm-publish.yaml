@@ -11,7 +11,7 @@ on:
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
     paths:
-      - 'helm/**'
+      - 'chart/**'
   # pull_request:
   #   branches: [ "main" ]
 
