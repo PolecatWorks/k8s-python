@@ -2,7 +2,8 @@
 import asyncio
 import click
 
-from k8spython.models import ServiceConfig
+from k8spython.hams import hams_app_create
+from k8spython.config import ServiceConfig
 from k8spython.service.web import webservice_init
 from pydantic_yaml import parse_yaml_raw_as, to_yaml_str
 from aiohttp import web
@@ -23,19 +24,23 @@ def config_parse(config_file: click.File) -> ServiceConfig:
     return config
 
 
-def service_app_create(config_file: click.File) -> web.Application:
+def service_app_create(app: web.Application, config: ServiceConfig) -> web.Application:
     """
     Create the service with the given configuration file
     """
 
-    config = config_parse(config_file)
-
-    app = web.Application()
-    app['config'] = config
     app['webservice'] = webservice_init(app)
 
-
     click.secho(f"Service created", fg="green")
+    return app
+
+
+def service_init(app: web.Application, config_file: click.File):
+    config = config_parse(config_file)
+    app['config'] = config
+
+    service_app_create(app, config)
+    hams_app_create(app, config.hams)
     return app
 
 
@@ -43,10 +48,10 @@ def service_start(config_file: click.File):
     """
     Start the service with the given configuration file
     """
+    app = web.Application()
 
-    app = service_app_create(config_file)
+    service_init(app, config_file)
+
     web.run_app(app, host=app['config'].webservice.url.host, port=app['config'].webservice.url.port)
-
-
 
     click.secho(f"Service stopped", fg="red")

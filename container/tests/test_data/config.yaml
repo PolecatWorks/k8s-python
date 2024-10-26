@@ -2,3 +2,6 @@
 webservice:
   url: http://localhost:8080
   prefix: apple
+hams:
+  url: http://localhost:8079
+  prefix: hams

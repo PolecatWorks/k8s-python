@@ -1,7 +1,10 @@
 
 
+from k8spython.hams.config import HamsConfig
 from pydantic import Field, BaseModel
 from pydantic import HttpUrl
+
+
 
 
 # TODO: Look here in future: https://github.com/pydantic/pydantic/discussions/2928#discussioncomment-4744841
@@ -18,3 +21,4 @@ class ServiceConfig(BaseModel):
     Configuration for the service
     """
     webservice: WebServerConfig = Field(description="Web server configuration")
+    hams: HamsConfig = Field(description="Health and monitoring configuration")
