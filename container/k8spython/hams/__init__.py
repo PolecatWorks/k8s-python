@@ -9,7 +9,6 @@ async def hams_app_cleanup(app: web.Application):
     Cleanup the service
     """
 
-    click.secho(f"HaMS: starting on {app['hams'].config.url.port} at {app['hams'].config.prefix}", fg="green")
     runner = web.AppRunner(app['hams'].hams_app)
     await runner.setup()
     site = web.TCPSite(runner, 'localhost', app['hams'].config.url.port)
@@ -59,25 +58,25 @@ class Hams:
         return True
 
 
-def hams_app_create(app: web.Application, config: HamsConfig) -> web.Application:
+def hams_app_create(base_app: web.Application, config: HamsConfig) -> web.Application:
     """
     Create the service with the given configuration file
     """
 
-    hams_app = web.Application()
-    hams = Hams(hams_app, app, config)
+    app = web.Application()
+    hams = Hams(app, base_app, config)
     # Provide a ref back to app from HaMS
-    hams_app['hams'] = hams
     app['hams'] = hams
+    base_app['hams'] = hams
 
 
+    click.secho(f"HaMS: {hams.config.url.port}/{hams.config.prefix}", fg="green")
 
-    app['hams'].hams_app.router.add_get(f'/{hams.config.prefix}/alive', AliveView)
-    app['hams'].hams_app.router.add_get(f'/{hams.config.prefix}/ready', ReadyView)
+    app.router.add_get(f'/{hams.config.prefix}/alive', AliveView)
+    app.router.add_get(f'/{hams.config.prefix}/ready', ReadyView)
 
-    app.cleanup_ctx.append(hams_app_cleanup)
+    base_app.cleanup_ctx.append(hams_app_cleanup)
 
     # https://docs.aiohttp.org/en/v3.8.4/web_advanced.html#cleanup-context
-    click.secho(f"HaMS: created", fg="green")
 
-    return app
+    return base_app
