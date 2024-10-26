@@ -7,7 +7,7 @@
 import click
 import sys
 
-from .models import ServiceConfig
+from .config import ServiceConfig
 
 
 
@@ -47,7 +47,7 @@ def cli(ctx, debug):
 
 # ------------- CLI commands go below here -------------
 
-from k8spython.models import ServiceConfig
+from k8spython.config import ServiceConfig
 
 
 

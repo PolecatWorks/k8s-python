@@ -1,3 +1,10 @@
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+
 [tool.poetry]
 name = "k8spython"
 version = "0.3.0"
@@ -31,9 +38,6 @@ pytest-click = "^1.1.0"
 pytest-cov = "^4.0.0"
 
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 k8s-python = "k8spython.tools:cli"

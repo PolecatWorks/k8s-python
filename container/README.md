@@ -30,4 +30,4 @@ Capture issues here to look at:
 * [x] config loading via yaml
 * [ ] secret loading [https://github.com/pydantic/pydantic/discussions/2928#discussioncomment-4744841]
 * [x] async http
-* [ ] liveness
+* [x] liveness
