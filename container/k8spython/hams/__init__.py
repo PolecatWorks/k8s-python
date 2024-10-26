@@ -9,10 +9,10 @@ async def hams_app_cleanup(app: web.Application):
     Cleanup the service
     """
 
-    click.secho("HaMS: starting", fg="green")
+    click.secho(f"HaMS: starting on {app['hams'].config.url.port} at {app['hams'].config.prefix}", fg="green")
     runner = web.AppRunner(app['hams'].hams_app)
     await runner.setup()
-    site = web.TCPSite(runner, 'localhost', 8079)
+    site = web.TCPSite(runner, 'localhost', app['hams'].config.url.port)
 
     await site.start()
     yield
@@ -71,8 +71,9 @@ def hams_app_create(app: web.Application, config: HamsConfig) -> web.Application
     app['hams'] = hams
 
 
-    app['hams'].hams_app.router.add_get('/hams/alive', AliveView)
-    app['hams'].hams_app.router.add_get('/hams/ready', ReadyView)
+
+    app['hams'].hams_app.router.add_get(f'/{hams.config.prefix}/alive', AliveView)
+    app['hams'].hams_app.router.add_get(f'/{hams.config.prefix}/ready', ReadyView)
 
     app.cleanup_ctx.append(hams_app_cleanup)
 
