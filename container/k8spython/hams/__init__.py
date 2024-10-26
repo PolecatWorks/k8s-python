@@ -25,17 +25,23 @@ class AliveView(web.View):
     async def get(self):
 
         hams = self.request.app['hams']
-        print(hams.app['config'])
-        # print(dir(self.request.app['']))
+
+        reply = hams.alive()
         alive = {
-            "alive": True
+            "alive": reply
         }
-        return web.json_response(alive)
+        return web.json_response(alive, status=200 if reply else 503)
 
 
 class ReadyView(web.View):
     async def get(self):
-        return web.Response(text="I'm ready")
+        hams = self.request.app['hams']
+
+        reply = hams.ready()
+        ready = {
+            "ready": reply
+        }
+        return web.json_response(ready, status=200 if reply else 503)
 
 
 class Hams:
@@ -43,6 +49,14 @@ class Hams:
         self.app = app
         self.hams_app = hams_app
         self.config = config
+
+
+    def alive(self) -> bool:
+        return True
+
+
+    def ready(self) -> bool:
+        return True
 
 
 def hams_app_create(app: web.Application, config: HamsConfig) -> web.Application:
