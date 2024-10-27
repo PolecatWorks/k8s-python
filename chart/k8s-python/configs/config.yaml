@@ -6,10 +6,10 @@ checks:
   # - http://localhost:4201
   shutdowns: []
 hams:
-  address: 127.0.0.1:8079
+  url: http://0.0.0.0:8079
   prefix: hams
 webservice:
-  prefix: /k8spython
+  prefix: pie/v0
   url: http://0.0.0.0:8080
 persistence:
   local_file:
