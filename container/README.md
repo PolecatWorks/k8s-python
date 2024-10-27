@@ -14,6 +14,11 @@ Optionally run with debug shell
 
     k8s-python --debug start tests/test_data/config.yaml
 
+Testing is provided by pytest. Typicallly invoked by `pytest` but also available via `ptw` to provide watching for automatic retest of file change.
+
+    pytest
+    ptw
+
 # Development Mode
 
 When developing you can take advantage of adev to manage restarts, etc

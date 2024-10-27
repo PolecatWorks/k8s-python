@@ -52,7 +52,10 @@ async def client(aiohttp_client, config):
 
 
 async def test_apple(client):
-    resp = await client.get('/pie/v0/apple')
-    assert resp.status == 200
-    text = await resp.text()
+    response = await client.get('/pie/v0/apple')
+    assert response.status == 200
+    text = await response.text()
     assert 'Apple' in text
+    assert response.content_type == 'application/json'
+    json_data = await response.json()
+    assert json_data == {"fruit": "Apple"}
