@@ -35,7 +35,7 @@ def service_app_create(app: web.Application, config: ServiceConfig) -> web.Appli
     # TODO: https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.AppKey
     app['webservice'] = app
 
-    click.secho(f"Service: {app['config'].webservice.url.port}/{app['config'].webservice.prefix}", fg="green")
+    click.secho(f"Service: { {app['config'].webservice.url.host}}:{app['config'].webservice.url.port}/{app['config'].webservice.prefix}", fg="green")
 
     return app
 

@@ -11,7 +11,7 @@ async def hams_app_cleanup(app: web.Application):
 
     runner = web.AppRunner(app['hams'].hams_app)
     await runner.setup()
-    site = web.TCPSite(runner, 'localhost', app['hams'].config.url.port)
+    site = web.TCPSite(runner,  app['hams'].config.url.host, app['hams'].config.url.port)
 
     await site.start()
     yield
@@ -70,7 +70,7 @@ def hams_app_create(base_app: web.Application, config: HamsConfig) -> web.Applic
     base_app['hams'] = hams
 
 
-    click.secho(f"HaMS: {hams.config.url.port}/{hams.config.prefix}", fg="green")
+    click.secho(f"HaMS: {hams.config.url.host}:{hams.config.url.port}/{hams.config.prefix}", fg="green")
 
     app.router.add_get(f'/{hams.config.prefix}/alive', AliveView)
     app.router.add_get(f'/{hams.config.prefix}/ready', ReadyView)

@@ -8,7 +8,7 @@ Go to the container dir and then run the install sequence
 
 Once installed run with the following:
 
-    k8s-python start tests/test_data/config.yaml
+    k8s-python start --config tests/test_data/config.yaml
 
 Optionally run with debug shell
 
