@@ -3,7 +3,8 @@
 from k8spython.hams.config import HamsConfig
 from pydantic import Field, BaseModel
 from pydantic import HttpUrl
-from pydantic_settings import BaseSettings, YamlConfigSettingsSource
+from pydantic_settings import BaseSettings, YamlConfigSettingsSource, SettingsConfigDict
+from pydantic_file_secrets import FileSecretsSettingsSource
 from pathlib import Path
 from typing import List, Dict, Any, Self
 
@@ -33,6 +34,28 @@ class ServiceConfig(BaseSettings):
     hams: HamsConfig = Field(description="Health and monitoring configuration")
     chroma: ChromaConfig = Field(description="Chroma configuration")
 
+    model_config = SettingsConfigDict(
+        # secrets_dir='/run/secrets',
+        secrets_nested_subdir=True,
+    )
+
     @classmethod
     def from_yaml(cls, path: Path) -> Self:
-        return cls(**YamlConfigSettingsSource(cls, path)())
+        return cls(**YamlConfigSettingsSource(cls, path)(), _secrets_dir="/Users/bengreene/Development/polecatworks/k8s-python/container/tests/test_data/secrets")
+
+
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls,
+        init_settings,
+        env_settings,
+        dotenv_settings,
+        file_secret_settings,
+    ):
+        return (
+            init_settings,
+            env_settings,
+            dotenv_settings,
+            FileSecretsSettingsSource(file_secret_settings),
+        )
