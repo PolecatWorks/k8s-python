@@ -71,14 +71,15 @@ def embed(ctx, config_file: click.File, embed_file: click.File):
 
 @cli.command()
 @click.argument("config_file", type=click.File("rb"))
+@click.option("--secrets", required=True,type=click.Path(exists=True))
 @click.pass_context
-def parse(ctx, config_file):
+def parse(ctx, config_file, secrets):
     """Parse a config"""
     from pydantic_yaml import parse_yaml_raw_as, to_yaml_str
 
 
     # config: ServiceConfig = parse_yaml_raw_as(ServiceConfig, config_file)
-    config: ServiceConfig = ServiceConfig.from_yaml(config_file.name)
+    config: ServiceConfig = ServiceConfig.from_yaml(config_file.name, secrets)
     click.echo(config)
 
     click.secho("Config:", fg="green")

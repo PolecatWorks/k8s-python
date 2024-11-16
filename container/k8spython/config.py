@@ -40,8 +40,8 @@ class ServiceConfig(BaseSettings):
     )
 
     @classmethod
-    def from_yaml(cls, path: Path) -> Self:
-        return cls(**YamlConfigSettingsSource(cls, path)(), _secrets_dir="/Users/bengreene/Development/polecatworks/k8s-python/container/tests/test_data/secrets")
+    def from_yaml(cls, config_path: Path, secrets_path: Path) -> Self:
+        return cls(**YamlConfigSettingsSource(cls, config_path)(), _secrets_dir=secrets_path)
 
 
     @classmethod
