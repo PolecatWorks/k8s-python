@@ -5,3 +5,6 @@ webservice:
 hams:
   url: http://localhost:8079
   prefix: hams
+chroma:
+  url: http://localhost:8081
+  apikey: NODY

@@ -34,7 +34,7 @@ def interactivedebugger(type, value, tb):
 @click.pass_context
 def cli(ctx, debug):
     """
-    Start a simple python K8s service
+    Service and tools for basic service
     """
     ctx.ensure_object(dict)
 
@@ -50,16 +50,35 @@ def cli(ctx, debug):
 from k8spython.config import ServiceConfig
 
 
+@cli.command()
+@click.argument("config_file", type=click.File("rb"))
+@click.argument("embed_file", type=click.File("rb"), nargs=-1)
+@click.pass_context
+def embed(ctx, config_file: click.File, embed_file: click.File):
+    """Load a file into the chromadb as an embedding"""
+    from .chroma import embed
+
+    from pydantic_yaml import parse_yaml_raw_as, to_yaml_str
+
+    config: ServiceConfig = ServiceConfig(_secrets_dir="secrets")
+
+
+    config: ServiceConfig = parse_yaml_raw_as(ServiceConfig, config_file)
+
+    embed(embed_file)
+
+
 
 @cli.command()
 @click.argument("config_file", type=click.File("rb"))
 @click.pass_context
 def parse(ctx, config_file):
-
+    """Parse a config"""
     from pydantic_yaml import parse_yaml_raw_as, to_yaml_str
 
 
-    config = parse_yaml_raw_as(ServiceConfig, config_file)
+    # config: ServiceConfig = parse_yaml_raw_as(ServiceConfig, config_file)
+    config: ServiceConfig = ServiceConfig.from_yaml(config_file.name)
     click.echo(config)
 
     click.secho("Config:", fg="green")
@@ -71,6 +90,7 @@ def parse(ctx, config_file):
 @click.option("--secrets", type=click.Path(exists=True))
 @click.pass_context
 def start(ctx, config, secrets):
+    """Start the service"""
 
     from k8spython.service import service_start
 
