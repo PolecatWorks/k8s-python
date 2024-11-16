@@ -1,11 +1,14 @@
 # Enable chromadb to be used with applications
 
+from typing import List
 import chromadb
 import click
 from chromadb.utils import embedding_functions
 from .utils import run_async
 from chromadb.config import Settings
 from chromadb import AsyncClientAPI
+from .config import ChromaConfig
+from dataclasses import dataclass
 
 
 async def connect_to_chroma_async(api_token: str, host: str = "localhost") -> AsyncClientAPI:
@@ -21,8 +24,6 @@ async def connect_to_chroma_async(api_token: str, host: str = "localhost") -> As
     """
 
 
-
-
     ngs = Settings(
         chroma_client_auth_provider="chromadb.auth.token_authn.TokenAuthClientProvider",
         chroma_client_auth_credentials=api_token,
@@ -32,8 +33,6 @@ async def connect_to_chroma_async(api_token: str, host: str = "localhost") -> As
     )
 
     # admin = chromadb.AdminClient(settings=ngs)
-
-
 
 
 
@@ -62,41 +61,29 @@ async def connect_to_chroma_async(api_token: str, host: str = "localhost") -> As
     return client
 
 
-
-async def embed_file(file: click.File) -> str:
-
-    # client = await chromadb.AsyncHttpClient(host="localhost", port=8000)
-    client = await connect_to_chroma_async("V3tt94YBCELOdbFr0YFONqwee176ZoJz")
-
-    collection = await client.get_or_create_collection(name="my_collection")
-
-    click.echo(f"Collection: {file.name}")
-    ben = file.read()
-
-    benstr = ben.decode("utf-8")
-    click.echo(f"File: {benstr}")
-
-    # click.echo(f"File: {ben.decode("utf-8")}")
-
-    await collection.add(documents=[benstr], ids=["note000.txt"])
-
-    results = await collection.query(
-        query_texts=["This is a query document about hawaii"], # Chroma will embed this for you
-        n_results=2 # how many results to return
-    )
-
-    click.echo(f"Results: {results}")
-
-    return "thanks"
+@dataclass
+class DocDefinition():
+    text: str
+    ids: str
 
 
-def embed(file: click.File):
+def files_to_docdefinitions(files: List[click.File]) -> List[DocDefinition]:
+    """
+    Convert a list of files to a list of DocDefinition objects
+
+    Args:
+        files (List[click.File]): List of files
+
+    Returns:
+        List[DocDefinition]: List of DocDefinition objects
+    """
+    return [DocDefinition(ids=file.name, text=file.read().decode("utf-8")) for file in files]
+
+
+def embed(config: ChromaConfig,  collection_name: str, files: List[click.File]) -> List[str]:
     """
     Load a file into the chromadb as an embedding
     """
-
-
-    text = "Hello, world!"
 
     if False:
         default_ef = embedding_functions.DefaultEmbeddingFunction()
@@ -107,14 +94,34 @@ def embed(file: click.File):
         sentence_embed = sentence_transformer_ef.embed_with_retries([text])
         click.echo(f'Embedding of {text} is {sentence_embed}')
 
-    result = run_async(embed_file(file))
-    click.echo(result)
+    async def embed_files():
+
+        client = await connect_to_chroma_async(config.apikey, config.url)
+        docDefs = files_to_docdefinitions(files)
+
+        collection = await client.get_or_create_collection(name=collection_name)
+
+        ids = [doc.ids for doc in docDefs]
+        await collection.add(documents=[doc.text for doc in docDefs], ids=ids)
+
+        return ids
+
+    return run_async(embed_files())
 
 
-    # collection = client.get_or_create_collection(
-    #     name="test", embedding_function=CustomEmbeddingFunction())
+def query(config: ChromaConfig,  collection_name: str, text: str, count: int) -> List[str]:
+    """
+    search for top n items in collection
+    """
 
+    async def query_text():
 
+        client = await connect_to_chroma_async(config.apikey, config.url)
 
+        collection = await client.get_or_create_collection(name=collection_name)
 
-    # chromadb.embed(file)
+        results = await collection.query(query_texts=[text], n_results=count)
+
+        return results
+
+    return run_async(query_text())
