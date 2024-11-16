@@ -1,4 +1,4 @@
-FROM python:3.13.0-slim-bookworm as build
+FROM python:3.13.0-slim-bookworm AS build
 
 RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
@@ -9,7 +9,7 @@ COPY * ./
 COPY k8spython k8spython
 RUN pip3 install .
 
-FROM python:3.13.0-slim-bookworm as publish
+FROM python:3.13.0-slim-bookworm AS publish
 EXPOSE 8080 8079
 COPY --from=build /opt/venv /opt/venv
 
