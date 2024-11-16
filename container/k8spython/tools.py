@@ -97,8 +97,7 @@ def query(ctx, config: click.File, secrets: click.Path, text: str):
     results = chroma.query(configObj.chroma, "splat", text, 2)
 
     click.echo(results)
-    for count, id in enumerate(results):
-        click.echo(f'Query [{count}]: {id}')
+
 
     # stophere
 
