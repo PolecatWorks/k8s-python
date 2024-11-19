@@ -19,6 +19,18 @@ Testing is provided by pytest. Typicallly invoked by `pytest` but also available
     pytest
     ptw
 
+# Parse your configs
+
+    k8s-python --debug parse --config tests/test_data/config.yaml --secrets tests/test_data/secrets
+
+# Add some test data
+
+    k8s-python --debug embed --config tests/test_data/config.yaml --secrets tests/test_data/secrets tests/test_data/sampletext/*
+
+# Query some data
+
+    k8s-python --debug query --config tests/test_data/config.yaml --secrets tests/test_data/secrets "Where is the best road to drive on"
+
 # Development Mode
 
 When developing you can take advantage of adev to manage restarts, etc

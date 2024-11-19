@@ -23,14 +23,22 @@ async def connect_to_chroma_async(api_token: str, host: str = "localhost") -> As
         AsyncClient: Authenticated async ChromaDB client
     """
 
-
     ngs = Settings(
         chroma_client_auth_provider="chromadb.auth.token_authn.TokenAuthClientProvider",
         chroma_client_auth_credentials=api_token,
+        # chroma_client_auth_token_transport_header="Authorization",
         anonymized_telemetry=False,
         allow_reset=True,
         chroma_server_ssl_enabled=False,
     )
+
+    # ngs = Settings(
+    #     chroma_client_auth_provider="chromadb.auth.token_authn.TokenAuthClientProvider",
+    #     chroma_client_auth_credentials=api_token,
+    #     anonymized_telemetry=False,
+    #     allow_reset=True,
+    #     chroma_server_ssl_enabled=False,
+    # )
 
     # admin = chromadb.AdminClient(settings=ngs)
 
