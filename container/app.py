@@ -1,5 +1,6 @@
 # This file enables support for adev during development. It is not required for the application to run.
-from k8spython.service import config_parse, service_app_create, service_init, service_start
+from k8spython.config import ServiceConfig
+from k8spython.service import service_app_create, service_init, service_start
 from aiohttp import web
 
 
@@ -10,8 +11,12 @@ def create_app():
 
     app = web.Application()
 
-    with open("tests/test_data/config.yaml", "rb") as config_file:
-        app = service_init(app, config_file)
+    config_filename = "tests/test_data/config.yaml"
+    secrets_dir = "tests/test_data/secrets"
+
+    # with open("tests/test_data/config.yaml", "rb") as config_file:
+    configObj: ServiceConfig = ServiceConfig.from_yaml(config_filename, secrets_dir)
+    app = service_init(app, configObj)
 
 
     return app

@@ -4,7 +4,7 @@ FROM python:3.13.0-slim-bookworm AS base
 
 FROM base AS build
 
-
+# Install some build tools for binary stle packages
 RUN apt-get update
 RUN apt-get update --fix-missing && apt-get install -y --fix-missing \
     build-essential \

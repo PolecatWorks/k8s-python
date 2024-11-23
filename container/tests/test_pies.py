@@ -1,5 +1,5 @@
 from aiohttp import web
-from k8spython.service import config_parse, service_app_create
+from k8spython.service import service_app_create
 from k8spython.config import ServiceConfig
 
 import pytest

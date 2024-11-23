@@ -11,7 +11,6 @@ from typing import List
 
 from .config import ServiceConfig
 
-from . import chroma
 
 
 
@@ -53,7 +52,7 @@ def cli(ctx, debug):
 
 from k8spython.config import ServiceConfig
 
-def chroma_options(function):
+def shared_options(function):
     function = click.option("--config", required=True, type=click.File("rb"))(function)
     function = click.option("--secrets", required=True, type=click.Path(exists=True))(function)
     function = click.pass_context(function)
@@ -61,7 +60,7 @@ def chroma_options(function):
 
 
 @cli.command()
-@chroma_options
+@shared_options
 def parse(ctx, config, secrets):
     """Parse a config"""
     from pydantic_yaml import to_yaml_str
@@ -72,39 +71,9 @@ def parse(ctx, config, secrets):
     click.echo(to_yaml_str(configObj))
 
 
-@cli.command()
-@chroma_options
-@click.argument("embed_files", type=click.File("rb"), nargs=-1)
-def embed(ctx, config: click.File, secrets: click.Path, embed_files: List[click.File]):
-    """Load a file into the chromadb as an embedding"""
-
-    configObj: ServiceConfig = ServiceConfig.from_yaml(config.name, secrets)
-
-    results = chroma.embed(configObj.chroma, "splat", embed_files)
-
-    for count, id in enumerate(results):
-        click.echo(f'Embedded [{count}]: {id}')
-
 
 @cli.command()
-@chroma_options
-@click.argument("text", type=click.STRING)
-def query(ctx, config: click.File, secrets: click.Path, text: str):
-    """Query for some text against the collection"""
-
-    configObj: ServiceConfig = ServiceConfig.from_yaml(config.name, secrets)
-
-    results = chroma.query(configObj.chroma, "splat", text, 2)
-
-    click.echo(results)
-
-
-    # stophere
-
-
-
-@cli.command()
-@chroma_options
+@shared_options
 def start(ctx, config, secrets):
     """Start the service"""
     from k8spython.service import service_start
