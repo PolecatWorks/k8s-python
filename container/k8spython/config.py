@@ -18,13 +18,6 @@ class WebServerConfig(BaseModel):
     prefix: str = Field(description="Prefix for the name of the resources")
 
 
-class ChromaConfig(BaseModel):
-    """
-    Configuration for ChromaDB
-    """
-    url: HttpUrl = Field(description="ChromaDB host URL")
-    apikey: str = Field(description="Api Key")
-
 
 class ServiceConfig(BaseSettings):
     """
@@ -32,7 +25,6 @@ class ServiceConfig(BaseSettings):
     """
     webservice: WebServerConfig = Field(description="Web server configuration")
     hams: HamsConfig = Field(description="Health and monitoring configuration")
-    chroma: ChromaConfig = Field(description="Chroma configuration")
 
     model_config = SettingsConfigDict(
         # secrets_dir='/run/secrets',
