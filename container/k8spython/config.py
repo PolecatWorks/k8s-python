@@ -7,6 +7,7 @@ from pydantic_settings import BaseSettings, YamlConfigSettingsSource, SettingsCo
 from pydantic_file_secrets import FileSecretsSettingsSource
 from pathlib import Path
 from typing import List, Dict, Any, Self
+from datetime import timedelta
 
 
 # TODO: Look here in future: https://github.com/pydantic/pydantic/discussions/2928#discussioncomment-4744841
@@ -18,6 +19,15 @@ class WebServerConfig(BaseModel):
     prefix: str = Field(description="Prefix for the name of the resources")
 
 
+# Define a timing object to capture time between event processing
+class EventConfig(BaseModel):
+    """
+    Process costs for a given events
+    """
+    maxChunks: int = Field(description="Max number of chunks that can be processed after which cannot take more load")
+    chunkDuration: timedelta = Field(description="Duration of events")
+    checkTime: timedelta = Field(description="Time between checking for new events")
+
 
 class ServiceConfig(BaseSettings):
     """
@@ -25,6 +35,7 @@ class ServiceConfig(BaseSettings):
     """
     webservice: WebServerConfig = Field(description="Web server configuration")
     hams: HamsConfig = Field(description="Health and monitoring configuration")
+    events: EventConfig = Field(description="Process costs for events")
 
     model_config = SettingsConfigDict(
         # secrets_dir='/run/secrets',

@@ -2,6 +2,12 @@
 from aiohttp import web
 from k8spython.hams.config import HamsConfig
 import click
+import logging
+
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 async def hams_app_cleanup(app: web.Application):
@@ -34,7 +40,8 @@ class AliveView(web.View):
 
 class ReadyView(web.View):
     async def get(self):
-        hams = self.request.app['hams']
+        hams: Hams = self.request.app['hams']
+        logger.info(f"Hams {hams}")
 
         reply = hams.ready()
         ready = {
@@ -55,7 +62,8 @@ class Hams:
 
 
     def ready(self) -> bool:
-        return True
+
+        return self.app['events'].spareCapacity()
 
 
 def hams_app_create(base_app: web.Application, config: HamsConfig) -> web.Application:
@@ -72,8 +80,11 @@ def hams_app_create(base_app: web.Application, config: HamsConfig) -> web.Applic
 
     click.secho(f"HaMS: {hams.config.url.host}:{hams.config.url.port}/{hams.config.prefix}", fg="green")
 
-    app.router.add_get(f'/{hams.config.prefix}/alive', AliveView)
-    app.router.add_get(f'/{hams.config.prefix}/ready', ReadyView)
+    app.add_routes([
+        web.view(f'/{hams.config.prefix}/alive', AliveView),
+        web.view(f'/{hams.config.prefix}/ready', ReadyView),
+    ])
+
 
     base_app.cleanup_ctx.append(hams_app_cleanup)
 

@@ -5,3 +5,7 @@ webservice:
 hams:
   url: http://localhost:8079
   prefix: hams
+events:
+  chunkDuration: P0DT0H0M1S
+  checkTime: P0DT0H0M0.500S
+  maxChunks: 100
