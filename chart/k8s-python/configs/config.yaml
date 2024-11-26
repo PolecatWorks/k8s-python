@@ -1,29 +1,37 @@
 ---
-checks:
-  timeout: 5
-  fails: 2
-  preflights: []
-  # - http://localhost:4201
-  shutdowns: []
+logging:
+  version: 1
+  disable_existing_loggers: False
+  formatters:
+    standard:
+      format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  handlers:
+    console:
+      class: logging.StreamHandler
+      formatter: standard
+      level: INFO
+      stream: ext://sys.stdout
+  loggers:
+    k8spython.hams:
+      handlers: [console]
+      level: WARNING
+      propagate: False
+  root:
+    handlers: [console]
+    level: INFO
+# checks:
+#   timeout: 5
+#   fails: 2
+#   preflights: []
+#   # - http://localhost:4201
+#   shutdowns: []
 hams:
   url: http://0.0.0.0:8079
   prefix: hams
 webservice:
   prefix: pie/v0
   url: http://0.0.0.0:8080
-persistence:
-  local_file:
-    prefix: test_data/local_files
-  object_store:
-    prefix: myfiles
-    os_type:
-      Aws:
-        region: us-east-1
-        endpoint: http://minio.minio.svc:9000
-        bucket_name: bucket1
-        access_key_id_file: s3/access_key_id
-        secret_key_file: s3/secret_key
-        allow_http: true
-
-      # LocalFileSystem:
-      #   prefix: test_data/object_store
+events:
+  chunkDuration: P0DT0H0M1S
+  checkTime: P0DT0H0M0.500S
+  maxChunks: 100

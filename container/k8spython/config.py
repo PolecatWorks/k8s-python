@@ -33,6 +33,7 @@ class ServiceConfig(BaseSettings):
     """
     Configuration for the service
     """
+    logging: Dict[str, Any] = Field(description="Logging configuration")
     webservice: WebServerConfig = Field(description="Web server configuration")
     hams: HamsConfig = Field(description="Health and monitoring configuration")
     events: EventConfig = Field(description="Process costs for events")

@@ -6,7 +6,6 @@ import logging
 
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -15,14 +14,16 @@ async def hams_app_cleanup(app: web.Application):
     Cleanup the service
     """
 
-    runner = web.AppRunner(app['hams'].hams_app)
+    runner = web.AppRunner(app['hams'].hams_app,
+                           access_log_format='%a "%r" %s %b "%{Referer}i" "%{User-Agent}i"',
+                           access_log=logger)
     await runner.setup()
     site = web.TCPSite(runner,  app['hams'].config.url.host, app['hams'].config.url.port)
 
     await site.start()
     yield
 
-    click.secho("HaMS: cleaning up", fg='red')
+    logger.info("HaMS: cleaning up")
     await runner.cleanup()
 
 
@@ -41,7 +42,6 @@ class AliveView(web.View):
 class ReadyView(web.View):
     async def get(self):
         hams: Hams = self.request.app['hams']
-        logger.info(f"Hams {hams}")
 
         reply = hams.ready()
         ready = {
@@ -78,7 +78,7 @@ def hams_app_create(base_app: web.Application, config: HamsConfig) -> web.Applic
     base_app['hams'] = hams
 
 
-    click.secho(f"HaMS: {hams.config.url.host}:{hams.config.url.port}/{hams.config.prefix}", fg="green")
+    logger.info(f"HaMS: {hams.config.url.host}:{hams.config.url.port}/{hams.config.prefix}")
 
     app.add_routes([
         web.view(f'/{hams.config.prefix}/alive', AliveView),

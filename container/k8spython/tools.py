@@ -6,11 +6,13 @@
 
 import click
 import sys
+import logging
+import logging.config
+
 
 from typing import List
 
 from .config import ServiceConfig
-
 
 
 
@@ -79,6 +81,13 @@ def start(ctx, config, secrets):
     from k8spython.service import service_start
 
     configObj: ServiceConfig = ServiceConfig.from_yaml(config.name, secrets)
+
+
+    # logging.basicConfig(level=logging.INFO)
+
+    # Load logging configuration from YAML file
+    logging.config.dictConfig(configObj.logging)
+
 
     service_start(configObj)
 

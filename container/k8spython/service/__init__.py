@@ -1,6 +1,6 @@
 
 import asyncio
-import click
+import logging
 
 from k8spython.service.state import Events
 from k8spython.hams import hams_app_create
@@ -10,25 +10,21 @@ from pydantic_yaml import parse_yaml_raw_as, to_yaml_str
 from aiohttp import web
 from datetime import datetime, timezone
 
+logger = logging.getLogger(__name__)
+
 
 async def service_coroutine(app: web.Application):
     """
     Coroutine for the service
     """
-    click.secho("Service: coroutine start", fg='red')
+    logger.info("Service: coroutine start")
 
-
-    click.echo("OK")
     eventState = Events(app['config'].events, datetime.now(timezone.utc), 5)
-    click.echo("O2K")
 
     app['events'] = eventState
 
-    click.secho(f"BLOOP: {eventState}", fg="yellow", bg="blue")
-
     while True:
         waitTime = eventState.updateChunk(datetime.now(timezone.utc))
-        # click.secho(f"Service: coroutine running {waitTime}", fg='red')
 
         await asyncio.sleep(waitTime)
 
@@ -37,17 +33,16 @@ async def service_coroutine_cleanup(app: web.Application):
     """
     Launch the coroutine as a cleanup task
     """
-    # click.secho("Service: coroutine start", fg='red')
 
     app['coroutine'] = asyncio.create_task(service_coroutine(app))
 
 
-    click.secho("Service: coroutine running", fg='red')
+    logger.info("Service: coroutine running")
     yield
 
     app['coroutine'].cancel()
 
-    click.secho("Service: coroutine cleanup", fg='red')
+    logger.info("Service: coroutine cleanup")
 
 
 def service_app_create(app: web.Application, config: ServiceConfig) -> web.Application:
@@ -66,7 +61,7 @@ def service_app_create(app: web.Application, config: ServiceConfig) -> web.Appli
     # TODO: https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.AppKey
     app['webservice'] = app
 
-    click.secho(f"Service: {app['config'].webservice.url.host}:{app['config'].webservice.url.port}/{app['config'].webservice.prefix}", fg="green")
+    logger.info(f"Service: {app['config'].webservice.url.host}:{app['config'].webservice.url.port}/{app['config'].webservice.prefix}")
 
     return app
 
@@ -88,6 +83,8 @@ def service_start(config: ServiceConfig):
     service_init(app, config)
 
 
-    web.run_app(app, host=app['config'].webservice.url.host, port=app['config'].webservice.url.port)
+    web.run_app(app, host=app['config'].webservice.url.host, port=app['config'].webservice.url.port,
+                access_log_format='%a "%r" %s %b "%{Referer}i" "%{User-Agent}i"',
+                access_log=logger)
 
-    click.secho(f"Service stopped", fg="red")
+    logger.info(f"Service stopped")

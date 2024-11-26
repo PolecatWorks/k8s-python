@@ -2,7 +2,12 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from k8spython.config import EventConfig
-import click
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 
 @dataclass
 class Events:
@@ -16,12 +21,11 @@ class Events:
             if self.chunkCount > 0:
                 self.chunkCount -= 1
                 self.lastTime = time + self.config.chunkDuration
-                click.echo(f"Chunks remaining {self.chunkCount}{" FULL" if self.chunkCount>self.config.maxChunks else ""}")
+                logger.info(f"Chunks remaining {self.chunkCount}{" FULL" if self.chunkCount>self.config.maxChunks else ""}")
                 return self.config.chunkDuration.total_seconds()
             else:
                 return self.config.checkTime.total_seconds()
         else:
-            click.echo(f"POOP {self.chunkCount}")
             return self.config.checkTime.total_seconds()
 
     def addChunks(self, chunks: int) -> int:
