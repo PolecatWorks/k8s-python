@@ -3,15 +3,22 @@ env: {}
 
 replicaCount: 1
 
-health:
-  startupProbe:
-    failureThreshold: 30
-    periodSeconds: 10
-  livenessProbe:
-    periodSeconds: 30
-  readinessProbe:
-    periodSeconds: 5
-
+lifecycle:
+  preStop:
+    httpGet:
+      port: http-health
+      path: "/hams/stop"
+livenessProbe:
+  httpGet:
+    port: http-health
+    path: "/hams/alive"
+  periodSeconds: 30
+  initialDelaySeconds: 30
+readinessProbe:
+  httpGet:
+    port: http-health
+    path: "/hams/ready"
+  periodSeconds: 5
 
 image: &image
   repository: polecatworks/k8s-python

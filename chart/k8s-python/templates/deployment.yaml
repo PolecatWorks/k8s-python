@@ -56,28 +56,11 @@ spec:
               containerPort: 8080
               protocol: TCP
           lifecycle:
-            preStop:
-              httpGet:
-                port: http-health
-                path: "/hams/stop"
-          # NOT using startupProbe as it provides us no benefit here. AND detrimetally provides a fake positive start.
-          # startupProbe:
-          #   httpGet:
-          #     port: http-health
-          #     path: "/hams/startup"
-          #   failureThreshold: {{ .Values.health.startupProbe.failureThreshold }}
-          #   periodSeconds: {{ .Values.health.startupProbe.periodSeconds }}
-          livenessProbe:
-            httpGet:
-              port: http-health
-              path: "/hams/alive"
-            periodSeconds: {{ .Values.health.livenessProbe.periodSeconds }}
-            initialDelaySeconds: {{ .Values.health.livenessProbe.initialDelaySeconds }}
+            {{- toYaml .Values.lifecycle | nindent 12 }}
           readinessProbe:
-            httpGet:
-              port: http-health
-              path: "/hams/ready"
-            periodSeconds: {{ .Values.health.readinessProbe.periodSeconds }}
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
