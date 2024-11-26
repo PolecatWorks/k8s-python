@@ -85,8 +85,6 @@ tolerations: []
 affinity: {}
 
 
-global: {}  # TODO: Work to remove this
-
 configs: {}  # Note: Defaults provided in helm configs dir
 
 
