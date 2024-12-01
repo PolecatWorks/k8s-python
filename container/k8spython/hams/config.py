@@ -85,11 +85,13 @@ class HamsChecks(BaseModel):
         logger.error(f"Checks failed")
 
         raise Exception("Checks failed")
-        return False
 
 
     async def run_preflights(self):
         results = await self.run_checks(self.preflights)
+
+    async def run_shutdowns(self):
+        results = await self.run_checks(self.shutdowns)
 
 
 

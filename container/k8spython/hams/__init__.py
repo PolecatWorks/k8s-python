@@ -23,12 +23,13 @@ async def hams_app_cleanup(app: web.Application):
     await site.start()
 
     logger.info("Executing startup scripts")
-    logger.info(f"prestart = {app['config'].hams.checks}")
+    logger.debug(f"prestart = {app['config'].hams.checks}")
     await app['config'].hams.checks.run_preflights()
 
     yield
 
     logger.info("HaMS: cleaning up")
+    await app['config'].hams.checks.run_shutdowns()
     await runner.cleanup()
 
 
@@ -53,6 +54,25 @@ class ReadyView(web.View):
             "ready": reply
         }
         return web.json_response(ready, status=200 if reply else 503)
+
+
+class MonitorView(web.View):
+    async def get(self):
+        # hams: Hams = self.request.app['hams']
+
+        # reply = hams.ready()
+        ready = {
+            "monitor": True
+        }
+        return web.json_response(ready, status=200)
+
+class ShutdownView(web.View):
+    async def post(self):
+
+        ready = {
+            "shutdown": True
+        }
+        return web.json_response(ready, status=200)
 
 
 class Hams:
@@ -88,6 +108,8 @@ def hams_app_create(base_app: web.Application, config: HamsConfig) -> web.Applic
     app.add_routes([
         web.view(f'/{hams.config.prefix}/alive', AliveView),
         web.view(f'/{hams.config.prefix}/ready', ReadyView),
+        web.view(f'/{hams.config.prefix}/monitor', MonitorView),
+        web.view(f'/{hams.config.prefix}/shutdown', ShutdownView)
     ])
 
 

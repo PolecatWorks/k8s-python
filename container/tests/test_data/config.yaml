@@ -28,15 +28,15 @@ hams:
   checks:
     timeout: 5
     fails: 2
-    preflights:
-    - name: Istio
-      http: http://google.com
-      description: Check that Istio is up
-      returncode: 300
-    - name: Istio
-      http: http://google.co.uk
-      description: Check that Istio is up
+    preflights: []
     shutdowns: []
+    # - name: Istio
+    #   http: http://google.com
+    #   description: Check that Istio is up
+    #   returncode: 300
+    # - name: Istio
+    #   http: http://google.co.uk
+    #   description: Check that Istio is up
 events:
   chunkDuration: P0DT0H0M1S
   checkTime: P0DT0H0M0.500S

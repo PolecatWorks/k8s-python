@@ -45,7 +45,8 @@ Capture issues here to look at:
 
 * [x] CLI parsing
 * [x] config loading via yaml
-* [ ] secret loading [https://github.com/pydantic/pydantic/discussions/2928#discussioncomment-4744841]
+* [x] secret loading [https://github.com/pydantic/pydantic/discussions/2928#discussioncomment-4744841]
 * [x] async http
 * [x] liveness
+* [x] prestart and shutdown actions
 * [ ] Signals support for shutdown https://docs.aiohttp.org/en/stable/web_advanced.html#signals
