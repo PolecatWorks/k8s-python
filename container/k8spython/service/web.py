@@ -1,16 +1,12 @@
 from aiohttp import web
 from k8spython.service.state import Events
 from pydantic import BaseModel, ValidationError
-import click
 import logging
+from k8spython import keys
 
 
 # Set up logging
 logger = logging.getLogger(__name__)
-
-class AppleView(web.View):
-    async def get(self):
-        return web.json_response({"fruit": "Apple"})
 
 
 class ChunkRequestModel(BaseModel):
@@ -34,16 +30,16 @@ class ChunkView(web.View):
         except ValidationError as e:
             return web.json_response({"error": e.errors()}, status=400)
 
-        events: Events = self.request.app['events']
+        events: Events = self.request.app[keys.events]
         chunks = events.addChunks(chunk_request.num_chunks)
 
         logger.info(f"Chunks updated to {chunks}")
 
-        return web.json_response(chunk_request.dict())
+        return web.json_response(chunk_request.model_dump())
 
 
     async def get(self):
-        events: Events = self.request.app['events']
+        events: Events = self.request.app[keys.events]
         reply = ChunkState(chunks=events.chunkCount)
 
-        return web.json_response(reply.dict())
+        return web.json_response(reply.model_dump())

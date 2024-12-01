@@ -6,7 +6,7 @@ from pydantic import HttpUrl
 from pydantic_settings import BaseSettings, YamlConfigSettingsSource, SettingsConfigDict
 from pydantic_file_secrets import FileSecretsSettingsSource
 from pathlib import Path
-from typing import List, Dict, Any, Self
+from typing import Dict, Any, Self
 from datetime import timedelta
 
 

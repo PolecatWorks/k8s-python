@@ -28,19 +28,10 @@ async def test_hello(aiohttp_client):
 
 @pytest.fixture
 def config() -> ServiceConfig:
-    file = """
----
-webservice:
-  url: http://localhost:8080
-  prefix: pie/v0
-hams:
-  url: http://localhost:8079
-  prefix: hams
-"""
 
-    with open("tests/test_data/config.yaml", "rb") as config_file:
-        config = config_parse(config_file)
-        return config
+
+    config: ServiceConfig = ServiceConfig.from_yaml("tests/test_data/config.yaml", "tests/test_data/secrets")
+    return config
 
 
 
@@ -51,11 +42,25 @@ async def client(aiohttp_client, config):
     return await aiohttp_client(app)
 
 
-async def test_apple(client):
-    response = await client.get('/pie/v0/apple')
+async def test_get_chunks(client):
+    response = await client.get('/pie/v0/chunks')
     assert response.status == 200
     text = await response.text()
-    assert 'Apple' in text
+    assert 'chunks' in text
     assert response.content_type == 'application/json'
     json_data = await response.json()
-    assert json_data == {"fruit": "Apple"}
+    assert json_data == {"chunks": 0}
+
+
+async def test_post_chunks(client):
+    response = await client.post('/pie/v0/chunks', json={"name": "example", "num_chunks": 5})
+    assert response.status == 200
+    assert response.content_type == 'application/json'
+
+    json_data = await response.json()
+    assert json_data == {"name": "example", "num_chunks": 5}
+
+    response = await client.get('/pie/v0/chunks')
+    assert response.status == 200
+    json_data = await response.json()
+    assert json_data == {"chunks": 5}

@@ -1,9 +1,8 @@
 
 from aiohttp import web
 from k8spython.hams.config import HamsConfig
-import click
 import logging
-
+from k8spython import keys
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -14,29 +13,29 @@ async def hams_app_cleanup(app: web.Application):
     Cleanup the service
     """
 
-    runner = web.AppRunner(app['hams'].hams_app,
+    runner = web.AppRunner(app[keys.hams].hams_app,
                            access_log_format='%a "%r" %s %b "%{Referer}i" "%{User-Agent}i"',
                            access_log=logger)
     await runner.setup()
-    site = web.TCPSite(runner,  app['hams'].config.url.host, app['hams'].config.url.port)
+    site = web.TCPSite(runner,  app[keys.hams].config.url.host, app[keys.hams].config.url.port)
 
     await site.start()
 
     logger.info("Executing startup scripts")
-    logger.debug(f"prestart = {app['config'].hams.checks}")
-    await app['config'].hams.checks.run_preflights()
+    logger.debug(f"prestart = {app[keys.config].hams.checks}")
+    await app[keys.config].hams.checks.run_preflights()
 
     yield
 
     logger.info("HaMS: cleaning up")
-    await app['config'].hams.checks.run_shutdowns()
+    await app[keys.config].hams.checks.run_shutdowns()
     await runner.cleanup()
 
 
 class AliveView(web.View):
     async def get(self):
 
-        hams = self.request.app['hams']
+        hams = self.request.app[keys.hams]
 
         reply = hams.alive()
         alive = {
@@ -47,7 +46,7 @@ class AliveView(web.View):
 
 class ReadyView(web.View):
     async def get(self):
-        hams: Hams = self.request.app['hams']
+        hams: Hams = self.request.app[keys.hams]
 
         reply = hams.ready()
         ready = {
@@ -58,9 +57,6 @@ class ReadyView(web.View):
 
 class MonitorView(web.View):
     async def get(self):
-        # hams: Hams = self.request.app['hams']
-
-        # reply = hams.ready()
         ready = {
             "monitor": True
         }
@@ -88,7 +84,7 @@ class Hams:
 
     def ready(self) -> bool:
 
-        return self.app['events'].spareCapacity()
+        return self.app[keys.events].spareCapacity()
 
 
 def hams_app_create(base_app: web.Application, config: HamsConfig) -> web.Application:
@@ -99,8 +95,8 @@ def hams_app_create(base_app: web.Application, config: HamsConfig) -> web.Applic
     app = web.Application()
     hams = Hams(app, base_app, config)
     # Provide a ref back to app from HaMS
-    app['hams'] = hams
-    base_app['hams'] = hams
+    app[keys.hams] = hams
+    base_app[keys.hams] = hams
 
 
     logger.info(f"HaMS: {hams.config.url.host}:{hams.config.url.port}/{hams.config.prefix}")

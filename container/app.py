@@ -1,6 +1,6 @@
 # This file enables support for adev during development. It is not required for the application to run.
 from k8spython.config import ServiceConfig
-from k8spython.service import service_app_create, service_init, service_start
+from k8spython.service import service_init
 from aiohttp import web
 import logging
 import logging.config

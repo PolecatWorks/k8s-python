@@ -19,15 +19,15 @@ logging:
   root:
     handlers: [console]
     level: INFO
-# checks:
-#   timeout: 5
-#   fails: 2
-#   preflights: []
-#   # - http://localhost:4201
-#   shutdowns: []
 hams:
   url: http://0.0.0.0:8079
   prefix: hams
+  checks:
+    timeout: 5
+    fails: 2
+    preflights: []
+    # - http://localhost:4201
+    shutdowns: []
 webservice:
   prefix: pie/v0
   url: http://0.0.0.0:8080
