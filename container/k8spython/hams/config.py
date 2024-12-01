@@ -6,6 +6,7 @@ from typing import List, Union
 from pydantic import Field, BaseModel
 from pydantic import HttpUrl
 from abc import ABC, abstractmethod
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -37,20 +38,29 @@ class HamsCheck(ABC, BaseModel):
         pass
 
 
+class HttpMethodEnum(str, Enum):
+    post = 'POST'
+    get = 'GET'
+
+
 class HttpCheck(HamsCheck):
     """
     Check that a URL is reachable
     """
     http: HttpUrl = Field(description="URL to check")
     returncode: int = Field(default=200, description="Expected return code")
+    method: HttpMethodEnum = Field(default=HttpMethodEnum.get, description="HTTP method to use")
 
     async def run_check(self) -> bool:
         logger.debug(f"HttpCheck[{self.name}]: {self.http} == {self.returncode}")
 
         async with aiohttp.ClientSession() as session:
-            async with session.get(str(self.http)) as response:
-                return response.status == self.returncode
-
+            if self.method == HttpMethodEnum.get:
+                async with session.get(str(self.http)) as response:
+                    return response.status == self.returncode
+            elif self.method == HttpMethodEnum.post:
+                async with session.post(str(self.http)) as response:
+                    return response.status == self.returncode
 
 
 CheckType = Union[HttpCheck]

@@ -25,9 +25,16 @@ hams:
   checks:
     timeout: 5
     fails: 2
-    preflights: []
-    # - http://localhost:4201
-    shutdowns: []
+    preflights:
+      - name: Network viable
+        http: http://localhost:15000/stats
+        description: Check that Istio is up and serving on stats API. Confirming network is viable.
+    shutdowns:
+      - name: Sidecar shutdown
+        http: http://localhost:15000/quitquitquit
+        method: POST
+        description: Quit the istio sidecar
+        returncode: 200
 webservice:
   prefix: pie/v0
   url: http://0.0.0.0:8080
