@@ -15,7 +15,6 @@ from typing import List
 from .config import ServiceConfig
 
 
-
 # https://stackoverflow.com/questions/242485/starting-python-debugger-automatically-on-error
 def interactivedebugger(type, value, tb):
     if hasattr(sys, "ps1") or not sys.stderr.isatty():
@@ -54,9 +53,12 @@ def cli(ctx, debug):
 
 from k8spython.config import ServiceConfig
 
+
 def shared_options(function):
     function = click.option("--config", required=True, type=click.File("rb"))(function)
-    function = click.option("--secrets", required=True, type=click.Path(exists=True))(function)
+    function = click.option("--secrets", required=True, type=click.Path(exists=True))(
+        function
+    )
     function = click.pass_context(function)
     return function
 
@@ -73,7 +75,6 @@ def parse(ctx, config, secrets):
     click.echo(to_yaml_str(configObj))
 
 
-
 @cli.command()
 @shared_options
 def start(ctx, config, secrets):
@@ -82,17 +83,12 @@ def start(ctx, config, secrets):
 
     configObj: ServiceConfig = ServiceConfig.from_yaml(config.name, secrets)
 
-
     # logging.basicConfig(level=logging.INFO)
 
     # Load logging configuration from YAML file
     logging.config.dictConfig(configObj.logging)
 
-
     service_start(configObj)
-
-
-
 
 
 # ------------- CLI commands above here -------------

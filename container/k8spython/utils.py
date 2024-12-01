@@ -1,8 +1,9 @@
-
 import sys
 import asyncio
+
 # import time
 from typing import Any, Coroutine
+
 
 def run_async(coroutine: Coroutine[Any, Any, Any]) -> Any:
     """
@@ -16,7 +17,7 @@ def run_async(coroutine: Coroutine[Any, Any, Any]) -> Any:
     """
     try:
         # For Windows compatibility, use WindowsSelectorEventLoopPolicy
-        if sys.platform == 'win32':
+        if sys.platform == "win32":
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
         # Get or create event loop

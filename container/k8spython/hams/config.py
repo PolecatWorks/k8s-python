@@ -1,4 +1,3 @@
-
 import asyncio
 import aiohttp
 import logging
@@ -15,9 +14,9 @@ class HamsCheck(ABC, BaseModel):
     """
     call for a preflight or shutdown
     """
+
     name: str = Field(description="Name of the check")
     description: str = Field(description="Description of the check")
-
 
     async def check(self) -> bool:
         """
@@ -25,13 +24,14 @@ class HamsCheck(ABC, BaseModel):
         """
         try:
             check_response = await self.run_check()
-            logger.info(f"Check[{self.name}]: {"PASSED" if check_response else "FAILED"}")
+            logger.info(
+                f"Check[{self.name}]: {"PASSED" if check_response else "FAILED"}"
+            )
 
             return check_response
         except Exception as e:
             logger.info(f"Check[{self.name}]: {e}")
             return False
-
 
     @abstractmethod
     async def run_check(self) -> bool:
@@ -39,17 +39,20 @@ class HamsCheck(ABC, BaseModel):
 
 
 class HttpMethodEnum(str, Enum):
-    post = 'POST'
-    get = 'GET'
+    post = "POST"
+    get = "GET"
 
 
 class HttpCheck(HamsCheck):
     """
     Check that a URL is reachable
     """
+
     http: HttpUrl = Field(description="URL to check")
     returncode: int = Field(default=200, description="Expected return code")
-    method: HttpMethodEnum = Field(default=HttpMethodEnum.get, description="HTTP method to use")
+    method: HttpMethodEnum = Field(
+        default=HttpMethodEnum.get, description="HTTP method to use"
+    )
 
     async def run_check(self) -> bool:
         logger.debug(f"HttpCheck[{self.name}]: {self.http} == {self.returncode}")
@@ -66,15 +69,17 @@ class HttpCheck(HamsCheck):
 CheckType = Union[HttpCheck]
 
 
-
 class HamsChecks(BaseModel):
     """
     preflight and shutdown calls for the service
     Check that certain actions are in place before we start the service fully
     When we shutdown run a set of shutdown actions
     """
+
     timeout: int = Field(description="Timeout for the check")
-    fails: int = Field(description="Number of fails before the check is considered failed")
+    fails: int = Field(
+        description="Number of fails before the check is considered failed"
+    )
     preflights: List[CheckType] = Field(description="Preflight checks")
     shutdowns: List[CheckType] = Field(description="Shutdown checks")
 
@@ -89,20 +94,18 @@ class HamsChecks(BaseModel):
             if all([await check.check() for check in checks]):
                 return True
             remaining_attempts -= 1
-            if remaining_attempts>0:
+            if remaining_attempts > 0:
                 await asyncio.sleep(self.timeout)
 
         logger.error(f"Checks failed")
 
         raise Exception("Checks failed")
 
-
     async def run_preflights(self):
         results = await self.run_checks(self.preflights)
 
     async def run_shutdowns(self):
         results = await self.run_checks(self.shutdowns)
-
 
 
 class HamsConfig(BaseModel):

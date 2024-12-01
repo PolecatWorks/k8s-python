@@ -1,5 +1,3 @@
-
-
 from k8spython.hams.config import HamsConfig
 from pydantic import Field, BaseModel
 from pydantic import HttpUrl
@@ -15,6 +13,7 @@ class WebServerConfig(BaseModel):
     """
     Configuration for the web server
     """
+
     url: HttpUrl = Field(description="Host to listen on")
     prefix: str = Field(description="Prefix for the name of the resources")
 
@@ -24,7 +23,10 @@ class EventConfig(BaseModel):
     """
     Process costs for a given events
     """
-    maxChunks: int = Field(description="Max number of chunks that can be processed after which cannot take more load")
+
+    maxChunks: int = Field(
+        description="Max number of chunks that can be processed after which cannot take more load"
+    )
     chunkDuration: timedelta = Field(description="Duration of events")
     checkTime: timedelta = Field(description="Time between checking for new events")
 
@@ -33,6 +35,7 @@ class ServiceConfig(BaseSettings):
     """
     Configuration for the service
     """
+
     logging: Dict[str, Any] = Field(description="Logging configuration")
     webservice: WebServerConfig = Field(description="Web server configuration")
     hams: HamsConfig = Field(description="Health and monitoring configuration")
@@ -45,8 +48,9 @@ class ServiceConfig(BaseSettings):
 
     @classmethod
     def from_yaml(cls, config_path: Path, secrets_path: Path) -> Self:
-        return cls(**YamlConfigSettingsSource(cls, config_path)(), _secrets_dir=secrets_path)
-
+        return cls(
+            **YamlConfigSettingsSource(cls, config_path)(), _secrets_dir=secrets_path
+        )
 
     @classmethod
     def settings_customise_sources(

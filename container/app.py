@@ -22,5 +22,4 @@ def create_app():
     logging.basicConfig(level=logging.DEBUG)
     app = service_init(app, configObj)
 
-
     return app

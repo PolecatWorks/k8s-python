@@ -37,7 +37,6 @@ class ChunkView(web.View):
 
         return web.json_response(chunk_request.model_dump())
 
-
     async def get(self):
         events: Events = self.request.app[keys.events]
         reply = ChunkState(chunks=events.chunkCount)
