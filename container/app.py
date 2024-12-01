@@ -2,7 +2,8 @@
 from k8spython.config import ServiceConfig
 from k8spython.service import service_app_create, service_init, service_start
 from aiohttp import web
-
+import logging
+import logging.config
 
 
 def create_app():
@@ -16,6 +17,9 @@ def create_app():
 
     # with open("tests/test_data/config.yaml", "rb") as config_file:
     configObj: ServiceConfig = ServiceConfig.from_yaml(config_filename, secrets_dir)
+
+    # import pdb; pdb.set_trace()
+    logging.basicConfig(level=logging.DEBUG)
     app = service_init(app, configObj)
 
 

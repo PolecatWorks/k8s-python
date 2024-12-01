@@ -21,6 +21,11 @@ async def hams_app_cleanup(app: web.Application):
     site = web.TCPSite(runner,  app['hams'].config.url.host, app['hams'].config.url.port)
 
     await site.start()
+
+    logger.info("Executing startup scripts")
+    logger.info(f"prestart = {app['config'].hams.checks}")
+    await app['config'].hams.checks.run_preflights()
+
     yield
 
     logger.info("HaMS: cleaning up")

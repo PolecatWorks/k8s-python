@@ -88,8 +88,6 @@ affinity: {}
 configs: {}  # Note: Defaults provided in helm configs dir
 
 
-
-
 command:
 - k8s-python
 - start

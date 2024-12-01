@@ -19,7 +19,7 @@ async def service_coroutine(app: web.Application):
     """
     logger.info("Service: coroutine start")
 
-    eventState = Events(app['config'].events, datetime.now(timezone.utc), 5)
+    eventState = Events(app['config'].events, datetime.now(timezone.utc), 0)
 
     app['events'] = eventState
 
