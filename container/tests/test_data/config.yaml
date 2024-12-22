@@ -25,16 +25,17 @@ webservice:
 hams:
   url: http://localhost:8079
   prefix: hams
+  shutdownDuration: P0DT0H0M10S
   checks:
     timeout: 5
     fails: 2
     preflights: []
-    shutdowns:
-      - name: Sidecar shutdown
-        http: http://localhost:15000/quitquitquit
-        method: POST
-        description: Quit the istio sidecar
-        returncode: 200
+    shutdowns: []
+      # - name: Sidecar shutdown
+      #   http: http://localhost:15000/quitquitquit
+      #   method: POST
+      #   description: Quit the istio sidecar
+      #   returncode: 200
 
     # - name: Istio
     #   http: http://google.com

@@ -1,4 +1,5 @@
 import asyncio
+from datetime import timedelta
 import aiohttp
 import logging
 from typing import List, Union
@@ -112,3 +113,6 @@ class HamsConfig(BaseModel):
     url: HttpUrl = Field(description="Host to listen for health and monitoring")
     prefix: str = Field(description="Prefix for the name of the resources")
     checks: HamsChecks = Field(description="Health and monitoring checks")
+    shutdownDuration: timedelta = Field(
+        description="Duration to wait for shutdown after initiated"
+    )

@@ -2,9 +2,16 @@ from aiohttp import web
 from k8spython.hams.config import HamsConfig
 import logging
 from k8spython import keys
+import signal
+import asyncio
 
 # Set up logging
 logger = logging.getLogger(__name__)
+
+
+def shutdownSig():
+    logger.info("Sending SIGTERM")
+    signal.raise_signal(signal.SIGTERM)
 
 
 async def hams_app_cleanup(app: web.Application):
@@ -64,6 +71,15 @@ class ShutdownView(web.View):
     async def post(self):
 
         ready = {"shutdown": True}
+        hams: Hams = self.request.app[keys.hams]
+
+        logger.info(
+            "Shutting down stall for conneciton draiining. Ready will be disabled automatically by k8s"
+        )
+
+        waitTime = self.request.app[keys.hams].config.shutdownDuration.total_seconds()
+        await asyncio.sleep(waitTime)
+
         return web.json_response(ready, status=200)
 
 
@@ -79,7 +95,6 @@ class Hams:
         return True
 
     def ready(self) -> bool:
-
         return self.app[keys.events].spareCapacity()
 
 
