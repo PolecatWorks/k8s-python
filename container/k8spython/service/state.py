@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from k8spython.config import EventConfig
+from prometheus_client import Gauge
 
 import logging
 
@@ -14,11 +15,15 @@ class Events:
     lastTime: datetime
     # If time is after lastTime then subtract one from chunkCount (if greater than 0). Then schedule for
     chunkCount: int
+    # TODO: Consider to use set_function for Gauge as more direct method of updating
+    chunkGauge = Gauge('chunk_gauge', 'Count of chunks remaining')
 
     def updateChunk(self, time: datetime) -> int:
         if self.lastTime < time:
             if self.chunkCount > 0:
                 self.chunkCount -= 1
+                self.chunkGauge.set(self.chunkCount)
+
                 self.lastTime = time + self.config.chunkDuration
                 logger.info(
                     f"Chunks remaining {self.chunkCount}{" FULL" if self.chunkCount>self.config.maxChunks else ""}"
@@ -29,8 +34,10 @@ class Events:
         else:
             return self.config.checkTime.total_seconds()
 
+
     def addChunks(self, chunks: int) -> int:
         self.chunkCount += chunks
+        self.chunkGauge.set(self.chunkCount)
         return self.chunkCount
 
     def spareCapacity(self) -> bool:

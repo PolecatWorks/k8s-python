@@ -4,6 +4,7 @@ import logging
 from k8spython import keys
 import signal
 import asyncio
+from prometheus_async import aio
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -118,6 +119,7 @@ def hams_app_create(base_app: web.Application, config: HamsConfig) -> web.Applic
             web.view(f"/{hams.config.prefix}/alive", AliveView),
             web.view(f"/{hams.config.prefix}/ready", ReadyView),
             web.view(f"/{hams.config.prefix}/monitor", MonitorView),
+            web.view(f"/{hams.config.prefix}/metrics", aio.web.server_stats),
             web.view(f"/{hams.config.prefix}/shutdown", ShutdownView),
         ]
     )

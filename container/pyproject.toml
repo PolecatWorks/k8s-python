@@ -25,6 +25,7 @@ pydantic-yaml = {extras = ["pyyaml"], version = "^1.4"}
 aiohttp = "^3"
 pydantic-settings = {extras = ["yaml"], version = "^2.6.1"}
 pydantic-file-secrets = "^0.3.0"
+prometheus-async = "^22.2.0"
 
 [tool.poetry.group.dev.dependencies]
 aiohttp-devtools = "^1"

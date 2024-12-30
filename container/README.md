@@ -52,3 +52,4 @@ Capture issues here to look at:
 * [x] Signals support for shutdown https://docs.aiohttp.org/en/stable/web_advanced.html#signals
   * [x] After shutdown is triggered ready should reply negative (automatic based on shutdown hook)
   * [z] System should pause a certain amount of time before final shutdown to ensure traffic is rebalanced off the pod (ie 2xliveness time)
+* [x] Metrics (Prometheus)
