@@ -60,6 +60,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
+      - name: Push Helm chart to GitHub Container Registry
+        run: |
+          cd chart
+          find . -type f -name "*.tgz" | while read file; do
+            echo "Processing file: $file"
+            echo "Pushing: $file"
+            echo helm push "$file" ghcr.io/${REPOSITORY}/charts
+          done
 
     #   - name: Package and push helm chart
     #     run: |
