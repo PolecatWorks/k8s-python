@@ -28,6 +28,7 @@ jobs:
           LOWER_REPO=${SHORTER_REPO@L}
           echo "REPOSITORY=$LOWER_REPO"
           echo "REPOSITORY=$LOWER_REPO" >> "$GITHUB_ENV"
+          echo "REPOSITORY_BASE=${GITHUB_REPOSITORY_OWNER@L}" >> "$GITHUB_ENV"
 
         #   echo "REPOSITORY=ghcr.io/$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
         #   echo "REPOSITORY=ghcr.io/$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
@@ -66,7 +67,7 @@ jobs:
           find . -type f -name "*.tgz" | while read file; do
             echo "Processing file: $file"
             echo "Pushing: $file"
-            echo helm push "$file" ghcr.io/${REPOSITORY}/charts
+            echo helm push "$file" ghcr.io/${REPOSITORY_BASE}/helm-charts
           done
 
     #   - name: Package and push helm chart
