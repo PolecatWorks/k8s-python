@@ -36,9 +36,19 @@ jobs:
       - name: Env variable output
         id: test-variables
         run: |
-          ls
           cd chart
-          find . -type d -maxdepth 1
+          find . -type d -maxdepth 1 | while read dir; do
+            echo "Processing directory: $dir"
+            chart_info=$(helm show chart "$dir" 2>/dev/null)
+
+            chart_name=$(echo "$chart_info" | grep '^name:' | awk '{print $2}')
+            chart_version=$(echo "$chart_info" | grep '^version:' | awk '{print $2}')
+            echo "Processing: $chart_name: $chart_version"
+
+            helm package "$dir"
+            ls
+
+          done
         #   echo ${{ steps.set-variables.outputs.REPOSITORY }}
         #   echo ${{ steps.set-variables.outputs.VERSION }}
 
