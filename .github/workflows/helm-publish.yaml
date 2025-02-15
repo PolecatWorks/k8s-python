@@ -1,64 +1,72 @@
 name: Helm
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 on:
   push:
-    branches: [ "main" ]
-    # Publish semver tags as releases.
+    branches:
+      - main
     tags: [ 'v*.*.*' ]
     paths:
-      - 'chart/**'
-  # pull_request:
-  #   branches: [ "main" ]
-
+      - 'charts/**'
 env:
-  # Use docker.io for Docker Hub if empty
-  REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}
-
-
+    REGISTRY: ghcr.io
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
+  package-helm-chart:
     permissions:
       contents: read
       packages: write
-      # This is used to complete the identity challenge
-      # with sigstore/fulcio when running outside of PRs.
-      id-token: write
+
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - id: lower-repo
-        name: Repository to lowercase
+      - name: Set environment variables
+        id: set-variables
         run: |
           SHORTER_REPO=${GITHUB_REPOSITORY%:*}
-          echo "repository=${SHORTER_REPO@L}" >> $GITHUB_OUTPUT
+          LOWER_REPO=${SHORTER_REPO@L}
+          echo "REPOSITORY=$LOWER_REPO"
+          echo "REPOSITORY=$LOWER_REPO" >> "$GITHUB_ENV"
+          echo "REPOSITORY_BASE=${GITHUB_REPOSITORY_OWNER@L}" >> "$GITHUB_ENV"
 
-      - name: Push Helm chart to OCI compatible registry (Github)
-        uses: bsord/helm-push@v4.1.0
+        #   echo "REPOSITORY=ghcr.io/$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+        #   echo "REPOSITORY=ghcr.io/$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+        #   echo "VERSION=$(yq -r .version ./charts/sample-app/Chart.yaml)" >> "$GITHUB_OUTPUT"
+
+      - name: Package Helm charts
+        id: test-variables
+        run: |
+          cd chart
+          find . -type d -maxdepth 1 -not -path "." | while read dir; do
+            echo "Processing directory: $dir"
+            chart_info=$(helm show chart "$dir" 2>/dev/null)
+
+            chart_name=$(echo "$chart_info" | grep '^name:' | awk '{print $2}')
+            chart_version=$(echo "$chart_info" | grep '^version:' | awk '{print $2}')
+            echo "Packaging: $chart_name: $chart_version"
+
+            helm package "$dir"
+
+            echo "Package: $chart_name-$chart_version.tgz"
+
+          done
+        #   echo ${{ steps.set-variables.outputs.REPOSITORY }}
+        #   echo ${{ steps.set-variables.outputs.VERSION }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          chart-folder: chart/k8s-python
-          useOCIRegistry: true
-          # registry-url:  oci://ghcr.io/${{ github.repository }}-helm
-          registry-url:  oci://ghcr.io/${{ steps.lower-repo.outputs.repository }}/helm
+          registry: ghcr.io
           username: ${{ github.actor }}
-          access-token: ${{ secrets.GITHUB_TOKEN }}
-          force: true
+          password: ${{ github.token }}
 
-      # - name: Helm Publish Action
-      #   uses: huggingface/helm-publish-action@latest
-      #   with:
-      #     workingDirectory: charts
-      #     repository: oci://ghcr.io/${{ github.repository }}
-      #     username: ${{ github.actor }}
-      #     password: ${{ secrets.GITHUB_TOKEN }}
-      #     beforeHook: cd subcharts/my-sub-chart && helm dependencies update
+      - name: Push Helm chart to GitHub Container Registry
+        run: |
+          cd chart
+          find . -type f -name "*.tgz" | while read file; do
+            echo "Processing file: $file"
+
+            helm push "$file" oci://${REGISTRY}/${REPOSITORY_BASE}/helm-charts
+            echo "Published: $file"
+          done
