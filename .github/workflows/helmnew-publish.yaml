@@ -36,8 +36,10 @@ jobs:
       - name: Env variable output
         id: test-variables
         run: |
-          env
+          ls
           cd chart
+          find .
+          echo GOT HERE
           find . -type d -depth 1
         #   echo ${{ steps.set-variables.outputs.REPOSITORY }}
         #   echo ${{ steps.set-variables.outputs.VERSION }}
