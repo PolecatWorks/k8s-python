@@ -47,6 +47,8 @@ jobs:
 
             helm package "$dir"
 
+            echo "Package: $chart_name-$chart_version.tgz"
+
           done
         #   echo ${{ steps.set-variables.outputs.REPOSITORY }}
         #   echo ${{ steps.set-variables.outputs.VERSION }}
