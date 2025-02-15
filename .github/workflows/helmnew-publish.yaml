@@ -67,7 +67,7 @@ jobs:
           find . -type f -name "*.tgz" | while read file; do
             echo "Processing file: $file"
             echo "Pushing: $file"
-            echo helm push "$file" ghcr.io/${REPOSITORY_BASE}/helm-charts
+            helm push "$file" oci://ghcr.io/${REPOSITORY_BASE}/helm-charts
           done
 
     #   - name: Package and push helm chart
