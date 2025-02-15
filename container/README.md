@@ -31,6 +31,12 @@ Testing is provided by pytest. Typicallly invoked by `pytest` but also available
 
     k8s-python --debug query --config tests/test_data/config.yaml --secrets tests/test_data/secrets "Where is the best road to drive on"
 
+# Add some chunks to the chunk parser
+
+There is an example chunk parser in the system that will parse some data and keep a count of how much is left to process.
+
+    curl -X POST http://k8s-python/pie/v0/chunks -H "Content-Type: application/json" -d '{"name": "example", "num_chunks": 25}'
+
 # Development Mode
 
 When developing you can take advantage of adev to manage restarts, etc

@@ -109,7 +109,7 @@ volumes: &volumes
     projected:
       sources:
         - secret:
-            optional: true
+            # optional: true
             name: "{{ .Values.secretName | default (include \"k8s-python.fullname\" .) }}"
             items:
               - key: access_key_id
