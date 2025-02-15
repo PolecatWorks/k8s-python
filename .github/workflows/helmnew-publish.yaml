@@ -38,9 +38,7 @@ jobs:
         run: |
           ls
           cd chart
-          find .
-          echo GOT HERE
-          find . -type d -depth 1
+          find . -type d -maxdepth 1
         #   echo ${{ steps.set-variables.outputs.REPOSITORY }}
         #   echo ${{ steps.set-variables.outputs.VERSION }}
 
