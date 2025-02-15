@@ -66,8 +66,9 @@ jobs:
           cd chart
           find . -type f -name "*.tgz" | while read file; do
             echo "Processing file: $file"
-            echo "Pushing: $file"
+
             helm push "$file" oci://ghcr.io/${REPOSITORY_BASE}/helm-charts
+            echo "Published: $file"
           done
 
     #   - name: Package and push helm chart
